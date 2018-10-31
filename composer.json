@@ -1,0 +1,13 @@
+{
+    "name": "a/b",
+    "authors": [
+        {
+            "name": "Ilyas Ilyasov",
+            "email": "iilyasov@std.qu.edu.az"
+        }
+    ],
+    "require": {
+        "intervention/image": "^2.4",
+        "ramsey/uuid": "^3.8"
+    }
+}
