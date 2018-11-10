@@ -111,6 +111,113 @@
       });
 
       $('.dropdown-trigger').dropdown();
+
+      $('.carousel.carousel-slider').carousel({
+        fullWidth: true,
+        indicators: true
+      });
+
+
+      function add_comment(pid){
+        //console.log(pid,$("#comment_to_"+pid).val());
+        $.ajax({
+          url : "addcomment.php",
+          method : "POST",
+            data : {pid : pid, text : $("#comment_to_"+pid).val()},
+          success : function(data){
+            if(data!=="empty"){
+              $("#comment_to_"+pid).val("");
+              var comment = JSON.parse(data);
+              $("#comments_of_"+pid).prepend(`<li>${comment.username} :  ${comment.text}</li>`)
+            }
+          },
+          error : function(e){
+            console.log(e);
+          }
+        });
+      }
+
+
+      function like(pid){
+        $.ajax({
+          url : "likepost.php",
+          method : "POST",
+          data : {pid : pid},
+          success : function(data){
+            console.log(data);
+            $("#likes_of_"+pid).text(data);
+            var btn =  $("button[data-id='"+pid+"']");
+            btn.attr("onclick" , `unlike(${pid})`);
+            btn.html('<i class="material-icons">thumb_down</i>');
+            btn.removeClass("orange");
+            btn.addClass("red")
+          },
+          error : function(e){
+            console.log(e);
+          }
+        });
+      }
+
+
+      function unlike(pid){
+        $.ajax({
+          url : "unlikepost.php",
+          method : "POST",
+          data : {pid : pid},
+          success : function(data){
+            console.log(data);
+            $("#likes_of_"+pid).text(data);
+            var btn =  $("button[data-id='"+pid+"']");
+            btn.attr("onclick" , `like(${pid})`);
+            btn.html('<i class="material-icons">thumb_up</i>');
+            btn.removeClass("red");
+            btn.addClass("orange")
+          },
+          error : function(e){
+            console.log(e);
+          }
+        });
+      }
+
+
+      window.no_more_posts = false;
+
+
+      $(window).scroll(function(){
+        console.log("...");
+         if($(window).scrollTop() == ($(document).height() - $(window).height()) && !window.no_more_posts){
+           $("#loading").show();
+           $("html, body").animate({ scrollBottom: 50 }, "slow");
+
+           $.ajax({
+            url : "fetch_latest_posts.php",
+            method : "GET",
+            //async: false,
+            data : {last_post_id : $('.card-panel').last().data('id')},
+            success : function(data){
+              if(data === "No more posts"){
+                window.no_more_posts = true;
+              }
+              $('.container-of-posts').append(data);
+              $("#loading").hide();
+            },
+            error : function(e){
+              alert(e);
+            }
+           });
+
+          // fetch(`fetch_latest_posts.php?last_post_id=${$('.card-panel').last().data('id')}`)
+          // .then(data => {
+          //   return data.text();
+          // })
+          // .then(data => {
+          //   if(data == "No more posts") window.no_more_posts = true;
+          //   $("#loading").hide();
+          //   $('.container-of-posts').append(data);
+          // })
+
+         }
+      });
     </script>
 
   </body>

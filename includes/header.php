@@ -1,5 +1,8 @@
 <?php ob_start();
-session_start(); require_once 'includes/config.php'; ?>
+session_start();
+require_once 'includes/config.php';
+//require_once("includes/functions.php");
+ ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,7 +20,7 @@ session_start(); require_once 'includes/config.php'; ?>
   <nav class="light-blue lighten-1" role="navigation">
     <div class="nav-wrapper container"><a id="logo-container" href="#" class="brand-logo">Logo</a>
       <ul class="right hide-on-med-and-down">
-        <li><a href="/reglogin">Home</a></li>
+        <li><a href="index.php">Home</a></li>
         <li><a href="#">Services</a></li>
         <li><a href="#">About</a></li>
         <li><a href="#">Contacts</a></li>

@@ -1,56 +1,55 @@
-<?php  include 'includes/header.php'; ?>
+<?php  include 'includes/header.php';
+ ?>
+
+  <?php
+
+    $sql = "SELECT p.pid,p.title,l.like_count,p.body,p.name,p.surname,p.date,p.profile_img FROM (SELECT u.name,u.surname,u.profile_img,p.id as pid,p.title,p.date,p.body FROM users u INNER JOIN posts p ON p.user_id = u.id WHERE p.deleted=0 ORDER BY p.id DESC) p LEFT JOIN (SELECT count(id) as like_count,post_id FROM likes GROUP BY post_id) l ON l.post_id = p.pid ORDER BY pid DESC LIMIT 2";
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    $posts = $stmt->fetchAll();
+   ?>
 
   <div class="section no-pad-bot" id="index-banner">
-    <div class="container">
-      <br><br>
-      <h1 class="header center orange-text">Starter Template</h1>
-      <div class="row center">
-        <h5 class="header col s12 light">A modern responsive front-end framework based on Material Design</h5>
-      </div>
-      <div class="row center">
-        <a href="http://materializecss.com/getting-started.html" id="download-button" class="btn-large waves-effect waves-light orange">Get Started</a>
-      </div>
-      <br><br>
+    <div class="container container-of-posts">
+      <?php foreach($posts as $post): ?>
+        <div class="card-panel" data-id="<?= $post["pid"] ?>">
+            <img height="50" style="border-radius:50%;border:2px solid grey;" src="images/<?= $post["profile_img"] ?>" alt="">
+            <span class="black-text"><?= $post["name"] . " ".$post["surname"] ?></span>
+            <h5 class=""><?= $post["title"] ?></h5>
+            <p><?= strlen($post["body"]) > 200 ? substr($post["body"],0,200) . "..." : $post["body"] ?></p>
+            <a href="post.php?id=<?= $post["pid"] ?>" class="btn green">Read more..</a>
+            <p style="float:right;color:grey"><?= date("d-m-Y H:i" , strtotime($post["date"])) ?></p>
+            <?php if(!user_liked_post($pdo,$_SESSION["id"] , $post["pid"])){  ?>
+              <button data-id="<?= $post["pid"] ?>" onclick="like(<?= $post["pid"] ?>)" class="btn orange"><i class="material-icons">thumb_up</i></button>
+            <?php }else{ ?>
+              <button data-id="<?= $post["pid"] ?>" onclick="unlike(<?= $post["pid"] ?>)" class="btn red"><i class="material-icons">thumb_down</i></button>
+            <?php } ?>
+            <p>Likes : <span id="likes_of_<?= $post["pid"] ?>"><?= $post["like_count"] ? $post["like_count"] : 0 ?></span></p>
+            <div>
+              <ul class="comments" id="comments_of_<?= $post["pid"] ?>">
 
+              </ul>
+              <p><?= $_SESSION["username"].": " ?></p>
+              <textarea id="comment_to_<?= $post["pid"]  ?>"></textarea>
+              <button onclick="add_comment(<?= $post["pid"]  ?>)" class="btn blue">Add comment</button>
+            </div>
+        </div>
+      <?php endforeach; ?>
+
+
+    </div>
+    <div class="preloader-wrapper small active" id="loading" style="display:none">
+      <div class="spinner-layer spinner-green-only">
+        <div class="circle-clipper left">
+          <div class="circle"></div>
+        </div><div class="gap-patch">
+          <div class="circle"></div>
+        </div><div class="circle-clipper right">
+          <div class="circle"></div>
+        </div>
+      </div>
     </div>
   </div>
 
-
-  <div class="container">
-    <div class="section">
-
-      <!--   Icon Section   -->
-      <div class="row">
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">flash_on</i></h2>
-            <h5 class="center">Speeds up development</h5>
-
-            <p class="light">We did most of the heavy lifting for you to provide a default stylings that incorporate our custom components. Additionally, we refined animations and transitions to provide a smoother experience for developers.</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">group</i></h2>
-            <h5 class="center">User Experience Focused</h5>
-
-            <p class="light">By utilizing elements and principles of Material Design, we were able to create a framework that incorporates components and animations that provide more feedback to users. Additionally, a single underlying responsive system across all platforms allow for a more unified user experience.</p>
-          </div>
-        </div>
-
-        <div class="col s12 m4">
-          <div class="icon-block">
-            <h2 class="center light-blue-text"><i class="material-icons">settings</i></h2>
-            <h5 class="center">Easy to work with</h5>
-
-            <p class="light">We have provided detailed documentation as well as specific code examples to help new users get started. We are also always open to feedback and can answer any questions a user may have about Materialize.</p>
-          </div>
-        </div>
-      </div>
-
-    </div>
-    <br><br>
-  </div>
 
   <?php  include 'includes/footer.php'; ?>

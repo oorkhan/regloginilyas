@@ -64,7 +64,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
                     $img->save('uploads/' . $names[$i]);
                     $url = "uploads/" . $names[$i];
 
-                    $sqlImages = 'INSERT INTO post_images(url, post_id) VALUES (:url, :post_id)';
+                    $sqlImages = 'INSERT INTO images(url, post_id) VALUES (:url, :post_id)';
                     $stmtImages = $pdo->prepare($sqlImages);
                     $stmtImages->execute(['url'=>$url, 'post_id' => $post_id]);
                   }

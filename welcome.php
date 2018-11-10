@@ -6,12 +6,24 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     header("location: login.php");
     exit;
 }
+    $page = isset($_GET["page"]) ? $_GET["page"] : 1;
+    $num_per_page = 1;
+    $offset = ($page-1) * $num_per_page;
     $user_id = $_SESSION['id'];
     //SELECT * FROM posts LEFT JOIN post_images ON posts.id = post_images.post_id
-    $sql = 'SELECT * FROM posts LEFT JOIN post_images ON (post_images.post_image_id = posts.id) WHERE user_id = :user_id ';
+    $sql = "SELECT posts.id,posts.deleted,posts.title,posts.body, GROUP_CONCAT(images.url SEPARATOR ', ')  AS 'images'  from posts left JOIN images on posts.id=images.post_id WHERE user_id = :id AND deleted = 0 GROUP BY posts.id ASC LIMIT :offsett ,:per_page";
+    $sql_for_count = "SELECT count(*) as post_count FROM posts WHERE user_id=:id AND deleted=0";
+    $stmt_for_count = $pdo->prepare($sql_for_count);
+    $stmt_for_count->execute(['id' => $user_id]);
+    $say = $stmt_for_count->fetch()["post_count"];
+
     $stmt = $pdo->prepare($sql);
-    $stmt->execute(['user_id' => $user_id]);
+    $stmt->bindValue(':id', (int) $user_id, PDO::PARAM_INT);
+    $stmt->bindValue(':offsett', (int) $offset, PDO::PARAM_INT);
+    $stmt->bindValue(':per_page', (int) $num_per_page, PDO::PARAM_INT);
+    $stmt->execute();
     $posts = $stmt->fetchAll();
+    //var_dump($posts);exit;
 /*     echo "<pre>";
     var_dump($posts);
     echo "</pre>"; */
@@ -24,19 +36,28 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
     <div class="container">
         <h3>Hi, <b><?php echo htmlspecialchars($_SESSION["username"]); ?></b>. This is your posts</h3>
         <table id="post_table">
-            <th>Title</th><th>Text</th><th>Buttons</th>
+            <th>Title</th><th>Text</th><th>Images</th><th>Buttons</th>
     <?php
-       foreach($posts as $post){
-           if($post['deleted'] == 0){
-                echo '
-                <tr><td>'.$post['title'].'</td><td>'.$post['body'].'</td><td>
-                <a id="'.$post['id'].'" class="waves-effect waves-light btn modal-trigger blue edit_data" href="#modal1">Edit</a> 
-                <a onclick="return confirm(\'Are you sure?\')" class="waves-effect waves-light btn red delete_btn" href="postDelete.php?id='.$post['id'].'">Delete</a></td></tr>
-                <tr><td colspan="3"><h5 style="text-align:center">'.$post['title'].' Images</h5><img style="width:100px" src="'.$post['url'].'" alt=""></td></tr>
-                ';
-           }
-        }
-    ?>
+    foreach($posts as $post){ ?>
+                  <tr>
+                    <td><?= $post['title'] ?></td>
+                    <td><?= $post['body'] ?></td>
+
+                    <td style="width:200px;overflow:auto;">
+
+                      <?php foreach(explode(', ',$post['images']) as $image): ?>
+                      <img style="width:100px" src="<?=$image?>" alt="">
+                      <?php endforeach; ?>
+                    </td>
+
+                    <td>
+                      <a  id="<?= $post['id'] ?>" class="waves-effect waves-light btn modal-trigger blue edit_data" href="#modal1">Edit</a>
+                      <a onclick="return confirm('Are you sure?')" class="waves-effect waves-light btn red delete_btn" href="postDelete.php?id=<?= $post['id'] ?>">Delete</a>
+                    </td>
+                  </tr>
+           <?php
+            }
+          ?>
     </table>
     <!-- Modal edit Structure -->
   <div id="modal1" class="modal">
@@ -69,5 +90,14 @@ if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
         <a href="logout.php" class="btn">Sign Out of Your Account</a>
         <a href="add_post.php" class="btn">Add Post</a>
     </p>
+
+    <div style="text-align:center;margin-top:40px;margin-bottom:40px;">
+      <a  href="?page=1" class="btn <?= 1==$page ? 'disabled' : 'blue' ?>">First</a>
+      <?php for($i=1;$i<=ceil($say/$num_per_page);$i++){ ?>
+        <a  href="?page=<?= $i ?>" class="btn <?= $i==$page ? 'disabled' : 'blue' ?>"><?= $i ?></a>
+      <?php } ?>
+      <a  href="?page=<?= ceil($say/$num_per_page) ?>" class="btn <?= ceil($say/$num_per_page)==$page ? 'disabled' : 'blue' ?>">Last</a>
     </div>
+
+</div>
      <?php  include 'includes/footer.php'; ?>
