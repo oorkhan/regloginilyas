@@ -1,5 +1,9 @@
 <?php ob_start();
 session_start();
+if(!isset($_SESSION["loggedin"]) and basename($_SERVER["PHP_SELF"]) !== "login.php"){
+  header("Location:login.php");
+  exit;
+}
 require_once 'includes/config.php';
 //require_once("includes/functions.php");
  ?>
@@ -24,6 +28,7 @@ require_once 'includes/config.php';
         <li><a href="#">Services</a></li>
         <li><a href="#">About</a></li>
         <li><a href="#">Contacts</a></li>
+        <li><a href="search.php"><i class="material-icons">search</i></a></li>
         <?php if(isset($_SESSION["loggedin"]) && $_SESSION["loggedin"] === true){ ?>
         <li>
           <a class='dropdown-trigger btn blue' href='#' data-target='dropdown1'><?= $_SESSION["username"] ?></a>

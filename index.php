@@ -52,4 +52,8 @@
   </div>
 
 
+<script type="text/javascript">
+  var index_page = true;
+</script>
+
   <?php  include 'includes/footer.php'; ?>

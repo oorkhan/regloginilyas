@@ -2,7 +2,7 @@
   session_start();
   if(isset($_GET["last_post_id"])){
     $last_post_id = $_GET["last_post_id"];
-    sleep(2);
+    sleep(0.5);
     require("includes/config.php");
     $sql = "SELECT p.pid,p.title,l.like_count,p.body,p.name,p.surname,p.date,p.profile_img FROM (SELECT u.name,u.surname,u.profile_img,p.id as pid,p.title,p.date,p.body FROM users u INNER JOIN posts p ON p.user_id = u.id WHERE p.deleted=0 AND p.id < :last_post_id ORDER BY p.id DESC) p LEFT JOIN (SELECT count(id) as like_count,post_id FROM likes GROUP BY post_id) l ON l.post_id = p.pid ORDER BY pid DESC LIMIT 1";
     $stmt = $pdo->prepare($sql);

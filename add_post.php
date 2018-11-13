@@ -4,6 +4,7 @@
 require "vendor/autoload.php";
 use Intervention\Image\ImageManagerStatic as Image;
 use Ramsey\Uuid\Uuid;
+require("models/Post.php");
 
 // Check if the user is logged in, if not then redirect him to login page
 if(!isset($_SESSION["loggedin"]) || $_SESSION["loggedin"] !== true){
@@ -34,23 +35,30 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     // Check input errors before inserting in database
     if(empty($title_err) && empty($body_err)){
 
-        // Prepare an insert statement
-        $sql = "INSERT INTO posts (title, body, user_id) VALUES (:title, :body, :user_id)";
+        // // Prepare an insert statement
+        // $sql = "INSERT INTO posts (title, body, user_id) VALUES (:title, :body, :user_id)";
+        //
+        // if($stmt = $pdo->prepare($sql)){
+        //     // Bind variables to the prepared statement as parameters
+        //     $stmt->bindParam(":title", $param_title, PDO::PARAM_STR);
+        //     $stmt->bindParam(":body", $param_body, PDO::PARAM_STR);
+        //     $stmt->bindParam(":user_id", $param_user_id, PDO::PARAM_STR);
+        //
+        //
+        //
+        //     // Set parameters
+        //     $param_title = $title;
+        //     $param_body = $body;
+        //     $param_user_id = $user_id;
+        //
+        //     // Attempt to execute the prepared statement
+        //     if($stmt->execute()){
 
-        if($stmt = $pdo->prepare($sql)){
-            // Bind variables to the prepared statement as parameters
-            $stmt->bindParam(":title", $param_title, PDO::PARAM_STR);
-            $stmt->bindParam(":body", $param_body, PDO::PARAM_STR);
-            $stmt->bindParam(":user_id", $param_user_id, PDO::PARAM_STR);
-
-
-            // Set parameters
-            $param_title = $title;
-            $param_body = $body;
-            $param_user_id = $user_id;
-
-            // Attempt to execute the prepared statement
-            if($stmt->execute()){
+              $post = new Post();
+              $post->title = $title;
+              $post->body = $body;
+              $post->user_id = $user_id;
+              if($post->save()){
                 $post_id = $pdo->lastInsertId();
 
                 if(isset($_FILES["images"])){
@@ -82,7 +90,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
 
         // Close statement
         unset($stmt);
-    }
+
 
     // Close connection
     unset($pdo);

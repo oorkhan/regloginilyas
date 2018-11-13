@@ -1,0 +1,212 @@
+===Obyekt Yonumlu Proqramlashdirma(OYP)===
+
+Obyekt yonumlu proqramlashdirma anlayishi bize xususi datatipler hazirlamagimiz
+ucun sherait yaradir.
+
+Obyekt dediyimiz shey daxilinde atributlar ve metodlar saxlayan tiplerdir.
+
+Meselen Telebe obyektini misal goturek. Bu obyektin ashagidaki atributlari ola biler:
+*Ad
+*Soyad
+*Tevellud
+*Ixtisas
+*Kurs
+
+Hemcinin Telebe obyektinin metodlari da ola biler:
+*Salamlamaq
+*Ders oxumaq
+
+OYP-de meqsed bir modelin atributlarini vahid bir obyekt daxilinde saxlamaqdir
+
+Obyektleri yaratmaq ucun ilk once class yaradilmalidir.
+Class yaradilarken obyektin atributlari ve metodlari nezere alinir
+Daha sonra o class-dan N sayda obyekt yaratmaq olar.
+
+Bele basha dushe bilerik, class umumi bir anlayishdir, obyekt ise hemin class-dan
+toremish varliqlar.
+
+Yeni, Telebe adinda class yaradaciq, Telebe umumi anlayishdir,
+Amma Memmed adinda olan bir Telebe , hemin Telebe class-inin bir uzvudur.
+
+
+PHP-de classlar   class sozu ile bashlayir,daha sonra classin adi,
+sonda { } braketler.
+
+class classAdi{
+  // atributlar
+  // metodlar
+}
+
+===============================================
+
+Yuxarida qeyd elediyimiz atributlara esasen Telebe class-ini yaradaq:
+
+  class Telebe{
+    public $ad;
+    public $soyad;
+    public $tevellud;
+    public $ixtisas;
+    public $kurs;
+  }
+
+Telebe classindan obyektler yaradaq :
+
+  $t1 = new Telebe();
+  $t2 = new Telebe();
+
+Yuxarida qeyd etdiyimiz Telebe classindaki atributlar cagirila bilme sahesine gore
+public,private ve protected  novlerine ayrilir.
+
+Buna Encapsulation deyilir.
+
+Yeni atributlar:
+  public olarsa,onlar istenilen yerden elde oluna biler
+  private olarsa, onlar sadece class daxili metodlar terefinnen cagirila biler
+  protected olarsa, sadece daxili metodlar ve child classlarin metodlari terefinnen cagirila biler
+
+
+========Konstruktor========
+
+Konstruktor class daxilinde bir metod-dur hansi ki class-dan obyekt yaradan zaman
+ishe dushur. Obyektle bagli ilkin konfiqurasiyalari bu metodla etmek olar.
+
+Meselen isteyirik ki Telebe classindan obyekt yaradan zaman ona
+ad,soyad,tevellud,ixtisas ve kurs atributlarini oturek :
+
+Bunu nezere alib Telebe classimizi deyishek :
+
+  class Telebe{
+    public $ad;
+    public $soyad;
+    public $tevellud;
+    public $ixtisas;
+    public $kurs;
+
+    public function __construct($a,$s,$t,$i,$k){
+      $this->ad = $a;
+      $this->soyad = $s;
+      $this->tevellud = $t;
+      $this->ixtisas = $i;
+      $this->kurs = $k;
+    }
+  }
+
+Classimizi duzeltdikden sonra artiq obyektleri yaradanda bu cure ede bilerik:
+
+  $t1 = new Telebe("Leyla","Memmedov","12-12-12","Cografiya",1);
+  // Obyektimizi yaradanda avtomatik Telebe classina verdiyimiz
+  qiymetler uygun olaraq atributlara yazildi.
+
+  echo $t1->ad; // bu shekilde $t1 obyektinin ad atributuna baxa bilerik.
+
+**Qeyd : metod daxilindeki $this ifadesi uzerinde ish aparilan obyekti
+temsil edir.
+Yeni : $this->ad = $a; o demekdir ki yaradilan obyektin ad atributuna $a qiymetini verdik.
+
+
+Telebe class-ina teqdim_et() metodu elave edek, hansi ki telebeni teqdim etsin:
+
+class Telebe{
+  public $ad;
+  public $soyad;
+  public $tevellud;
+  public $ixtisas;
+  public $kurs;
+
+  public function __construct($a,$s,$t,$i,$k){
+    $this->ad = $a;
+    $this->soyad = $s;
+    $this->tevellud = $t;
+    $this->ixtisas = $i;
+    $this->kurs = $k;
+  }
+
+  public function teqdim_et(){
+    return 'Salam men '.$this->ad . ' '.$this->soyad;
+  }
+}
+
+
+yeni bir Telebe yaradaq ve ozunu teqdim etsin :
+
+  $t2 = new Telebe("Murad","Memmedli","01-01-01","Riyaziyyat",3);
+  echo $t2->teqdim_et(); // Salam men Murad Memmedli
+
+
+===STATIK metodlar ve atributlar===
+
+Bezen class metodlarini obyekt yaratmadan da istifade etmek lazim gelir
+Bu zaman biz static metodlardan istifade edirik :
+
+class classAdi{
+  static $atribut;
+
+  public static function funksiya(){
+    //.....
+  }
+}
+
+
+Meselen bele bir numune ede bilerik :
+Telebe classinda bir $say atributu duzeldek,bu atribut yaradilmish
+Telebe obyektlerini sayini saxlasin.
+
+Mentiq beledir ki say atributu her obyekt ucun ayri ayri deyil,
+butun obyektler ucun eyni olacagindan,o class-a aid bir xusisyetdir.
+
+Ona gore butun obyektler ucun sabit olacaq bu atribut.
+Static vererek hemin atributu butun obyektlerden ucun sabit edecik .
+
+class Telebe{
+  public $ad;
+  public $soyad;
+  public $tevellud;
+  public $ixtisas;
+  public $kurs;
+  public static $say;
+
+  public function __construct($a,$s,$t,$i,$k){
+    $this->ad = $a;
+    $this->soyad = $s;
+    $this->tevellud = $t;
+    $this->ixtisas = $i;
+    $this->kurs = $k;
+    self::$say+=1;
+  }
+
+  public function teqdim_et(){
+    return 'Salam men '.$this->ad . ' '.$this->soyad;
+  }
+
+  public static function say(){
+    return self::$say;
+  }
+}
+
+Konstruktora diqqet etsek gorerik ki  orada  $this  evezine  self  ifadesi ishlenib.
+$this ifadesinden ferqli olaraq "self" ifadesi umumi classi temsil edir.
+Yeni bu o demekdir ki Telebe classinin $say atributunu 1 vahid artir.
+Konstruktor daxilinde yazdiq ki obyekt yarananda bu emeliyat bash versin.
+
+
+Ashagida say() metodunu da static metod verdik,cunki bu metodu tekce obyekt uzerinde yox,
+class uzerinde de icra etmek isteyirik.
+
+Bu metod daxilinde de self::$say ifadesi return olunub,
+yeni bu classinin  $say atributu return olunub.
+
+====================
+Telebe classimizdan obyektlerimizi yaradaq ve say() metodunu yoxlayaq:
+
+$t1 = new Telebe("Memmed","Tagiyev","12-02-92" , "Edebiyyat",2);
+$t2 = new Telebe("Gulcan","Ehmedov","22-05-94" , "Edebiyyat",2);
+echo Telebe::say();// 2
+echo $t1->say();// 2
+
+:: operatoru ile obyekt yaratmadan Telebe classinin ozunde say()
+metodunu ishletdik.
+
+her iki usulla 2 neticesini aldiq, sebeb budur ki hemin $say atributu
+static atributdur, class ve onun butun obyektleri ucun eynidir.
+Her hansi bir obyekt terefinden bu qiymet deyishdirilse butun obyektler
+ucun de hemin qiymet deyisher.

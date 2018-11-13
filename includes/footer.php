@@ -181,15 +181,16 @@
 
 
       window.no_more_posts = false;
-
+      var X = true;
 
       $(window).scroll(function(){
         console.log("...");
-         if($(window).scrollTop() == ($(document).height() - $(window).height()) && !window.no_more_posts){
+         if(($(window).scrollTop() == ($(document).height() - $(window).height())) && X === true && window.no_more_posts === false && typeof index_page !== 'undefined'){
+           X = false;
            $("#loading").show();
-           $("html, body").animate({ scrollBottom: 50 }, "slow");
+           $("html, body").animate({ scrollBottom: 100 }, "slow");
 
-           $.ajax({
+          $.ajax({
             url : "fetch_latest_posts.php",
             method : "GET",
             //async: false,
@@ -200,6 +201,7 @@
               }
               $('.container-of-posts').append(data);
               $("#loading").hide();
+              X = true;
             },
             error : function(e){
               alert(e);
