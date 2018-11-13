@@ -1,0 +1,5 @@
+PDO
+
+PDO::connect()
+
+$pdo = new PDO();
